@@ -1,6 +1,6 @@
 //Set up for .env
 if(process.env.NODE_ENV !=='production'){
-    require('dotenv').load();
+    require('dotenv').config();
 }
 
 
@@ -26,18 +26,21 @@ app.use('/js',express.static(path.join(__dirname,'node_modules/bootstrap/dist/js
 app.use('/js',express.static(path.join(__dirname,'node_modules/jquery/dist')));             //Cac file cua js trong jquery
 
 
-//Route
-const indexRoute=require('./routes/index');
-app.use('/',indexRoute);
-
 //Mogoose
 const mongoose=require('mongoose');
 mongoose.connect(process.env.DATABASE_URL,{
     useNewUrlParser:true
 });
-const {connection}=mongoose;
-connection.on('error',err=> console.log(err));
-connection.once('open',()=> console.log('Connected to MongoDB'));
+const db=mongoose.connection;
+db.on('error',error=> console.error(error));
+db.once('open',()=> console.log('Connected to MongoDB'));
+
+
+//Route
+const indexRoute=require('./routes/index');
+app.use('/',indexRoute);
+
+
 
 
 var port=process.env.PORT||3000;

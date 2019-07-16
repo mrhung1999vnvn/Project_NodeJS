@@ -16,8 +16,8 @@ app.use(morgan('tiny'));
 app.use(expressLayout);         //Static layout
 //Set Engine
 app.set('view engine','ejs');
-app.set('views',__dirname + '\\views');
-app.set('layout','layouts\\layout');            //Static for layout file
+app.set('views',__dirname + '/views');
+app.set('layout','layouts/layout');            //Static for layout file
 
 //Set static files
 app.use(express.static(path.join(__dirname,'/public')));    //Set static cac file trong public

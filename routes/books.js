@@ -8,21 +8,24 @@ const fs=require('fs');
 
 
 //Upload file images
-const uploadpath=path.join('public',Book.coverImageBasePath);
-const imageMimeTypes=['images/jpeg','image/png','images/gif','images/jpg']   //Loai duoi
-const multer=require('multer');             //Upload file
+//const uploadpath=path.join('public',Book.coverImageBasePath);
+const imageMimeTypes=['image/jpeg','image/png','image/gif','images/jpg']   //Loai Anh
+/*const multer=require('multer');             //Upload file
 var storage=multer.diskStorage({
     destination:(req,file,cb)=>{
         cb(null,uploadpath);
-    }
+    },
+    
 })
 var upload=multer({
     storage:storage
 });
+*/
+
 
 router.route('/').get( async (req,res)=>{
     //Search option
-    let querys=Book.find();
+    let querys=await Book.find({});
     if(req.query.title!=null&&req.query.title!=''){
         querys=querys.regex('title',new RegExp(req.query.title,'i'));
     }
@@ -61,45 +64,27 @@ router.route('/new').get( async (req,res)=>{
     }
 });
 
-
-router.post('/new',upload.single('cover'),async(req,res)=>{
-    const filename=req.file!=null?req.file.originalname:null;
+// Use upload with multer above to upload file
+router.post('/new',async(req,res)=>{
+    //const filename=req.file!=null?req.file.originalname:null;
     try{
         const book=new Book({
             title:req.body.title,
             author:req.body.author,
             publishDate:new Date(req.body.publishDate),
             pageCount:req.body.pageCount,
-            coverImageName:filename,
             description:req.body.description
         });
-        //var checkFile=path.join(,book.coverImageName)
+        saveCover(book,req.body.cover)
         book.save((err)=>{
             if(err)console.log(err);
-            else console.log('save');
+            else res.redirect('/books');
         })
     }catch{
-        if(book.coverImageName!=null){
-            removeBookCover(filename);
-        }
         console.log('Wrong');
         renderNewPage(res,book,true);
     }
 });
-
-
-function removeBookCover(filename){
-    //console.log(fs.exists(path.join(uploadpath,filename)));
-    try{
-        if(fs.existsSync(path.join(uploadpath,filename))){
-            fs.unlink(path.join(uploadpath,filename),err=>{
-                if(err)console.error(err);
-            })
-        }
-    }catch{
-        console.log('wrong');
-    }
-}
 
 async function renderNewPage(res,book,hasError = false){
     try{
@@ -112,6 +97,17 @@ async function renderNewPage(res,book,hasError = false){
         res.render('books/new',params);
     }catch{
         res.redirect('/books');
+    }
+}
+
+
+//Check data of Image
+function saveCover(book,coverEncoded){
+    if(coverEncoded==null)return
+    const cover=JSON.parse(coverEncoded);
+    if(cover!=null&&imageMimeTypes.includes(cover.type)){
+        book.coverImage=new Buffer.from(cover.data,'base64');
+        book.coverImageType=cover.type;
     }
 }
 module.exports=router;

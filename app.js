@@ -12,6 +12,8 @@ const debug=require('debug')('app');
 const path=require('path');
 const expressLayout=require('express-ejs-layouts');
 const bodyParser=require('body-parser');
+const methodOverrive=require('method-override');
+
 
 app.use(morgan('tiny'));
 app.use(expressLayout);         //Static layout
@@ -27,7 +29,7 @@ app.use('/js',express.static(path.join(__dirname,'node_modules/bootstrap/dist/js
 app.use('/js',express.static(path.join(__dirname,'node_modules/jquery/dist')));             //Cac file cua js trong jquery
 app.use(bodyParser.urlencoded({limit:'10mb', extended:false}));
 app.use(bodyParser.json());
-
+app.use(methodOverrive('_method'));
 //Mogoose
 const mongoose=require('mongoose');
 mongoose.connect(process.env.DATABASE_URL,{

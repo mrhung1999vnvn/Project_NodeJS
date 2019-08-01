@@ -1,0 +1,20 @@
+<h2><%= books.title%></h2>
+<img src="<%= books.coverImagePath%>" alt="abc" width="100px" height="150px">
+<div>
+    Author:<%= books.author.name%>
+</div>
+<div>
+    Publish Date: <%= books.publishDate.toDateString()%>
+</div>
+<div>
+    Page Count: <%= books.pageCount%>
+</div>
+<div>
+    Description: <%= books.description%>
+</div>
+
+<a href="/books/edit/<%= books.id%>">Edit</a>
+<%- include('../partials/deleteForm',{
+    url:`/books/${books.id}`
+})%>
+<a href="/authors/<%= books.author.id%>">View Author</a>

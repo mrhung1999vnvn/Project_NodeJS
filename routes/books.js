@@ -65,6 +65,7 @@ router.route('/new').get( async (req,res)=>{
 });
 
 // Use upload with multer above to upload file
+// Create a new book
 router.post('/new',async(req,res)=>{
     //const filename=req.file!=null?req.file.originalname:null;
     try{
@@ -87,20 +88,88 @@ router.post('/new',async(req,res)=>{
 });
 
 async function renderNewPage(res,book,hasError = false){
+    renderFormPage(res,book,'new',hasError);
+}
+
+//Detail book
+router.route('/:id').get( async(req,res)=>{
+    try{
+        const book=await Book.findById(req.params.id).populate('author').exec();
+        res.render('books/show',{
+            books:book,
+        })
+    }
+    catch{
+        res.send('Không Có');
+    }
+});
+//Edit Book
+router.route('/edit/:id').get(async (req,res)=>{
+    try{
+        const book=await Book.findById(req.params.id);
+        renderEditPage(res,book);
+    }catch{
+        res.redirect('/');
+    }
+});
+async function renderEditPage(res,book,hasError = false){
+    renderFormPage(res,book,'edit',hasError);
+}
+async function renderFormPage(res,book,form,hasError = false){
     try{
         const author=await Author.find({});
         const params={
             authors:author,
             book:book,
         };
-        if(hasError) params.errorMessage='Error Creating Book';
-        res.render('books/new',params);
+        if(hasError) params.errorMessage='Error When Edit Book';
+        res.render(`books/${form}`,params);
     }catch{
         res.redirect('/books');
     }
 }
 
-
+//Update book
+router.put('/:id',async(req,res)=>{
+    //const filename=req.file!=null?req.file.originalname:null;
+    let book;
+    try{
+        book=await Book.findById(req.params.id);
+        book.title=req.body.title;
+        book.author=req.body.author;
+        book.publishDate=new Date(req.body.publishDate);
+        book.pageCount=req.body.pageCount;
+        book.title=req.body.title;
+        book.description=req.body.description;
+        if(req.body.cover!=null &&req.body.cover!='')
+            saveCover(book,req.body.cover)
+        await book.save();
+        res.redirect(`/books/${book.id}`)
+    }catch{
+        if(book!=null){
+            renderEditPage(res,book);
+        }
+        else{
+            res.redirect('/');
+        }
+    }
+});
+//Delete book
+router.route('/:id').delete( async(req,res)=>{
+    let book;
+    try{
+        book=await Book.findById(req.params.id);
+        await book.remove();
+        res.redirect('/books')
+    }catch{
+        if(book==null){
+            res.redirect('/');
+        }
+        else{
+            res.redirect(`/books/${book.id}`);
+        }
+    }
+});
 //Check data of Image
 function saveCover(book,coverEncoded){
     if(coverEncoded==null)return

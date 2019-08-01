@@ -39,13 +39,14 @@ router.route('/').get( async (req,res)=>{
     }
 
     try{
-        const books=await querys.exec();
+        const books=querys;
         res.render('books/index',{
             books:books,
             searchOption:req.query
         })
-    }catch{
-        res.redirect('/');
+    }catch(err){
+        console.log(err);
+        //res.redirect('/books');
     }
     
 });

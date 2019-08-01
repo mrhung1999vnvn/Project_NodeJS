@@ -1,6 +1,8 @@
 <h3 class="page-header">New Book</h3>
 <form action="/books/new" method="POST" >    <!--enctype="multipart/form-data"-->  
     <%- include('_form_field.ejs')%>
-    <a class="" href="/books">Cancel</a>
-    <input class="btn btn-primary" type="submit" value="Create">
+    <div class="form-row btn-row form-row-end">
+        <a class="btn btn-danger" href="/books">Cancel</a>
+        <input class="btn btn-primary" type="submit" value="Create">
+    </div>
 </form>

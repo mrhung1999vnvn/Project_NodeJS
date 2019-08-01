@@ -11,13 +11,16 @@
     <script defer src="https://unpkg.com/filepond-plugin-file-encode/dist/filepond-plugin-file-encode.js"></script>
     <script defer src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
     <script defer src="/js/fileUploads.js"></script>
+    <link rel="stylesheet" href="/stylesheet/main.css">
     <title>Document</title>
 </head>
 <body>
-    
-    <%- include('../partials/headers.ejs')%>
-    <%- include('../partials/errorMessage.ejs')%>
-    <br>
-    <%-body%>
+    <div class="container">
+        <%- include('../partials/headers.ejs')%>
+        <div class="inner-container">
+            <%- include('../partials/errorMessage.ejs')%>
+            <%-body%>
+        </div>   
+    </div>
 </body>
 </html>
